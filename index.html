@@ -18,20 +18,27 @@
       width: 300px;
       cursor: pointer;
     }
+    input[type="file"] {
+      margin-top: 10px;
+    }
     video {
       margin-top: 20px;
       width: 100%;
       max-width: 500px;
     }
+    #preview img {
+      width: 100px;
+      margin: 5px;
+    }
   </style>
 </head>
 <body>
   <h1>Image to Video Converter</h1>
-  <div id="dropzone">Drag and drop images here</div>
+  <div id="dropzone">Drag and drop images here or click to upload</div>
+  <input type="file" id="file-input" multiple accept="image/*" />
   <button id="generate-video">Generate Video</button>
   <div id="preview"></div>
   <video id="video-output" controls></video>
-  <a id="download-link" href="#" download="output.mp4" style="display:none;">Download Video</a>
 
   <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.5/dist/ffmpeg.min.js"></script>
   <script src="app.js"></script>

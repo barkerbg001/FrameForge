@@ -2,9 +2,11 @@ const { createFFmpeg, fetchFile } = FFmpeg;
 const ffmpeg = createFFmpeg({ log: true });
 
 const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-input');
 const generateButton = document.getElementById('generate-video');
+const preview = document.getElementById('preview');
 const videoOutput = document.getElementById('video-output');
-const downloadLink = document.getElementById('download-link');
+
 let imageFiles = [];
 
 // Handle drag-and-drop
@@ -25,19 +27,24 @@ dropzone.addEventListener('drop', (e) => {
   updatePreview();
 });
 
+// Handle file input
+fileInput.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files).filter((file) => file.type.startsWith('image/'));
+  imageFiles = [...imageFiles, ...files];
+  updatePreview();
+});
+
+// Update preview
 function updatePreview() {
-  const preview = document.getElementById('preview');
   preview.innerHTML = '';
-  imageFiles.forEach((file, index) => {
+  imageFiles.forEach((file) => {
     const img = document.createElement('img');
     img.src = URL.createObjectURL(file);
-    img.style.width = '100px';
-    img.style.margin = '5px';
     preview.appendChild(img);
   });
 }
 
-// Handle video generation
+// Generate video
 generateButton.addEventListener('click', async () => {
   if (!imageFiles.length) {
     alert('Please upload at least one image.');
@@ -51,7 +58,7 @@ generateButton.addEventListener('click', async () => {
     ffmpeg.FS('writeFile', `image${index}.png`, fetchFile(file));
   });
 
-  // Generate the video
+  // Generate video
   await ffmpeg.run(
     '-framerate', '1', // 1 frame per second
     '-i', 'image%d.png',
@@ -65,11 +72,12 @@ generateButton.addEventListener('click', async () => {
   const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
   const videoURL = URL.createObjectURL(videoBlob);
 
-  // Display the video
-  videoOutput.src = videoURL;
-  videoOutput.style.display = 'block';
-
-  // Add download link
+  // Automatically download the video
+  const downloadLink = document.createElement('a');
   downloadLink.href = videoURL;
-  downloadLink.style.display = 'block';
+  downloadLink.download = 'output.mp4';
+  downloadLink.click();
+
+  // Display the video preview
+  videoOutput.src = videoURL;
 });
