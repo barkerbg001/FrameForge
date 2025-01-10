@@ -1,6 +1,3 @@
-const { createFFmpeg, fetchFile } = FFmpeg;
-const ffmpeg = createFFmpeg({ log: true });
-
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('file-input');
 const generateButton = document.getElementById('generate-video');
@@ -51,33 +48,35 @@ generateButton.addEventListener('click', async () => {
     return;
   }
 
-  if (!ffmpeg.isLoaded()) await ffmpeg.load();
+  // Create a Whammy video
+  const video = new Whammy.Video(1); // 1 frame per second
 
-  // Write files to FFmpeg
-  imageFiles.forEach((file, index) => {
-    ffmpeg.FS('writeFile', `image${index}.png`, fetchFile(file));
-  });
+  for (const file of imageFiles) {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    await new Promise((resolve) => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        video.add(canvas);
+        resolve();
+      };
+    });
+  }
 
-  // Generate video
-  await ffmpeg.run(
-    '-framerate', '1', // 1 frame per second
-    '-i', 'image%d.png',
-    '-c:v', 'libx264',
-    '-pix_fmt', 'yuv420p',
-    'output.mp4'
-  );
-
-  // Get the output video
-  const data = ffmpeg.FS('readFile', 'output.mp4');
-  const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+  const output = video.compile();
+  const videoBlob = new Blob([output], { type: 'video/webm' });
   const videoURL = URL.createObjectURL(videoBlob);
 
   // Automatically download the video
   const downloadLink = document.createElement('a');
   downloadLink.href = videoURL;
-  downloadLink.download = 'output.mp4';
+  downloadLink.download = 'output.webm';
   downloadLink.click();
 
-  // Display the video preview
+  // Display the video
   videoOutput.src = videoURL;
 });
