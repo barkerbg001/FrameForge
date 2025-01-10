@@ -37,6 +37,8 @@ function updatePreview() {
   imageFiles.forEach((file) => {
     const img = document.createElement('img');
     img.src = URL.createObjectURL(file);
+    img.style.width = '100px';
+    img.style.margin = '5px';
     preview.appendChild(img);
   });
 }
@@ -45,6 +47,12 @@ function updatePreview() {
 generateButton.addEventListener('click', async () => {
   if (!imageFiles.length) {
     alert('Please upload at least one image.');
+    return;
+  }
+
+  if (typeof Whammy === 'undefined') {
+    console.error('Whammy.js is not loaded. Please ensure the library is correctly included.');
+    alert('Whammy.js library is missing or not loaded. Check the console for more details.');
     return;
   }
 
@@ -67,6 +75,7 @@ generateButton.addEventListener('click', async () => {
     });
   }
 
+  // Compile the video and create a blob
   const output = video.compile();
   const videoBlob = new Blob([output], { type: 'video/webm' });
   const videoURL = URL.createObjectURL(videoBlob);
@@ -77,6 +86,7 @@ generateButton.addEventListener('click', async () => {
   downloadLink.download = 'output.webm';
   downloadLink.click();
 
-  // Display the video
+  // Display the video for preview
   videoOutput.src = videoURL;
+  videoOutput.style.display = 'block';
 });
