@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to Video Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #dropzone {
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px auto;
+      width: 300px;
+      cursor: pointer;
+    }
+    video {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 500px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Image to Video Converter</h1>
+  <div id="dropzone">Drag and drop images here</div>
+  <button id="generate-video">Generate Video</button>
+  <div id="preview"></div>
+  <video id="video-output" controls></video>
+  <a id="download-link" href="#" download="output.mp4" style="display:none;">Download Video</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.5/dist/ffmpeg.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
